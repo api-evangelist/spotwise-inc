@@ -1,0 +1,28 @@
+generated: '2026-07-21'
+method: searched
+probe: true
+source: https://spotwise.ai/security
+url: https://spotwise.ai/security
+# The /security page is a genuine data & privacy / security-posture page, but the
+# provider EXPLICITLY DISCLAIMS formal certifications: "You will not find SOC 2 or ISO
+# certification logos on this page. We have not completed those certifications." The
+# automated keyword probe false-matched "SOC 2" from that negation — corrected here.
+certifications: []
+posture:
+  formal_certifications: none
+  disclaimed:
+  - SOC 2
+  - ISO 27001
+  frameworks:
+  - GDPR (self-attested alignment; EU-based company)
+  practices:
+  - sensible security practices
+  - access controls
+  security_contact: security@spotwise.ai
+evidence:
+- source: https://spotwise.ai/security
+  keywords:
+  - data & privacy
+  - gdpr
+  - access controls
+  note: SOC 2 / ISO explicitly stated as NOT completed

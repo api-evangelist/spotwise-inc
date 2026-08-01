@@ -1,7 +1,27 @@
 aid: spotwise-inc
+accessModel:
+  pricing: unknown
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Unknown
+  confidence: low
+  source: []
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/spotwise-inc.png
 name: Spotwise, Inc.
-description: Spotwise, Inc. is a company surfaced as a portfolio company of 500-global and added to the
-  API Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+description: >-
+  Spotwise is an agentic operating system for broadcast media that detects advertising
+  across radio, TV, podcasts, and streaming audio in real time, converts that ad-play
+  data into qualified sales leads with decision-maker enrichment, and automates the
+  outreach and CRM workflows that sell against it. Built by broadcasters and backed by
+  500 Global, the platform packages products including Spotwise aOS, the Spotty
+  conversational copilot, Spotwise Intelligence, Lead-list, Contact Finder, Monitors &
+  Signals, and Skills for ad-sales and commercial-leadership teams across 13 countries.
+  Spotwise is a closed SaaS product accessed through app.spotwise.ai; it publishes no
+  public API, developer portal, or specification at this time.
 url: https://raw.githubusercontent.com/api-evangelist/spotwise-inc/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -11,9 +31,16 @@ x-tier: stub
 x-tier-reason: portfolio-lead
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-21'
 tags:
 - Company
+- Broadcast Media
+- Advertising
+- Media Monitoring
+- Sales Intelligence
+- Lead Generation
+- Artificial Intelligence
+- Radio
 apis: []
 maintainers:
 - FN: Kin Lane
@@ -23,3 +50,20 @@ maintainers:
 common:
 - type: Website
   url: https://spotwise.ai
+- type: Blog
+  url: https://spotwise.ai/news
+- type: Support
+  url: https://spotwise.ai/faq
+- type: Login
+  url: https://app.spotwise.ai
+- type: PrivacyPolicy
+  url: https://spotwise.ai/security
+- type: TrustCenter
+  url: security/spotwise-inc-trust-center.yml
+- type: DomainSecurity
+  url: security/spotwise-inc-domain-security.yml
+x-enrichment:
+  date: '2026-07-21'
+  status: minimal
+  artifacts_added: 2
+  pass: local-v1
