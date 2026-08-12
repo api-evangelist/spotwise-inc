@@ -1,0 +1,17 @@
+{
+    "authorization_servers": [
+        "https://app.spotwise.ai/api/auth"
+    ],
+    "bearer_methods_supported": [
+        "header"
+    ],
+    "resource": "https://app.spotwise.ai/api/mcp",
+    "resource_documentation": "https://app.spotwise.ai/docs/mcp-oauth",
+    "resource_name": "Spotwise Remote MCP",
+    "scopes_supported": [
+        "openid",
+        "profile",
+        "email",
+        "offline_access"
+    ]
+}

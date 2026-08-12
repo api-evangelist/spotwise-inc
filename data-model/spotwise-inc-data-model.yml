@@ -1,0 +1,176 @@
+generated: '2026-08-12'
+method: probed
+source: live GET responses from https://spotwise.ai/api/<collection> (Payload CMS 3
+  REST); no OpenAPI, no GraphQL SDL and no object reference exist to derive from
+scope: content API only
+note: >-
+  This is the entity graph of the PUBLIC CONTENT API only — the collections
+  spotwise.ai serves anonymously. It is NOT the Spotwise product data model
+  (advertisers, spots, stations, leads, contacts): that surface is behind
+  app.spotwise.ai and its MCP server, both OAuth-gated, and none of its shapes are
+  published. Every entity and field below was read off a real 200 response;
+  relationships are recorded only where a document literally carried the reference
+  field. Nothing is inferred from naming.
+
+entities:
+- name: posts
+  path: /api/posts
+  count_observed: 49
+  fields:
+  - id
+  - title
+  - slug
+  - heroImage
+  - content
+  - relatedPosts
+  - categories
+  - meta
+  - publishedAt
+  - authors
+  - populatedAuthors
+  - generateSlug
+  - updatedAt
+  - createdAt
+  - _status
+  id_type: integer
+
+- name: news
+  path: /api/news
+  count_observed: 1
+  fields:
+  - id
+  - title
+  - slug
+  - heroImage
+  - content
+  - publishedAt
+  - meta
+  id_type: integer
+
+- name: pages
+  path: /api/pages
+  count_observed: 9
+  fields:
+  - id
+  - title
+  - slug
+  - isRootPage
+  - parent
+  - hero
+  - layout
+  id_type: integer
+
+- name: media
+  path: /api/media
+  fields:
+  - id
+  - filename
+  - mimeType
+  - filesize
+  - width
+  - height
+  - url
+  - thumbnailURL
+  - caption
+  - keywords
+  - blurDataURL
+  - folder
+  - createdAt
+  - updatedAt
+  id_type: integer
+
+- name: categories
+  path: /api/categories
+  fields:
+  - id
+  - title
+  - slug
+  - generateSlug
+  - parent
+  id_type: integer
+
+- name: forms
+  path: /api/forms
+  fields:
+  - id
+  - title
+  - fields
+  id_type: integer
+  note: form field definitions are themselves data (blockType, name, label, required,
+    width, defaultValue)
+
+- name: search
+  path: /api/search
+  fields:
+  - id
+  - priority
+  - doc
+  - slug
+  - meta
+  id_type: integer
+  note: a denormalised search index over the other collections
+
+- name: redirects
+  path: /api/redirects
+  count_observed: 0
+  id_type: integer
+
+- name: insights
+  path: /api/insights
+  fields:
+  - id
+  - title
+  - heroImage
+  - content
+  id_type: integer
+
+- name: users
+  path: /api/users
+  access: 403 anonymously
+  fields: not-observable
+  note: correctly access-controlled; no fields recorded
+
+relationships:
+- from: posts
+  to: media
+  type: has_one
+  via: heroImage
+  evidence: observed field carrying a media document id
+- from: posts
+  to: categories
+  type: has_many
+  via: categories
+- from: posts
+  to: posts
+  type: has_many
+  via: relatedPosts
+- from: news
+  to: media
+  type: has_one
+  via: heroImage
+- from: categories
+  to: categories
+  type: has_one
+  via: parent
+  evidence: observed "parent" populated with another category document (e.g.
+    "Market analysis" -> "Radio Ad Monitoring")
+- from: pages
+  to: pages
+  type: has_one
+  via: parent
+- from: search
+  to: posts
+  type: has_one
+  via: doc.relationTo + doc.value (polymorphic reference)
+
+conventions:
+  id_prefixes: none — all ids are plain integers
+  soft_delete: '_status field on posts (draft/published)'
+  envelope: see conventions/spotwise-inc-conventions.yml
+
+gaps:
+  product_entities_published: false
+  note: >-
+    The entities that matter commercially — advertiser, spot/airing, station, campaign,
+    lead, decision-maker contact, skill, workflow — are described only in prose on the
+    marketing pages and in the FAQ. No schema for any of them is published.

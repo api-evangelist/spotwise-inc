@@ -1,0 +1,116 @@
+generated: '2026-08-12'
+method: probed
+source: live requests against https://spotwise.ai/api/*, https://app.spotwise.ai/api/mcp
+  and the Spotwise attribution relay; no OpenAPI and no developer documentation exist
+  to derive from
+note: >-
+  Spotwise publishes no API reference, so none of these conventions is documented by
+  the provider — each was observed on a real response on 2026-08-12. Treat every entry
+  as "how the deployed surface behaves", not "what the vendor promises".
+
+auth_style:
+  primary: OAuth 2.0 bearer (Authorization header) on both MCP servers and all
+    write/admin surfaces
+  anonymous: published-content reads on the Payload REST + GraphQL API
+  see: authentication/spotwise-inc-authentication.yml
+
+idempotency:
+  supported: false
+  header: null
+  note: >-
+    No Idempotency-Key header, retry-safety statement or replay-window documentation
+    exists on any Spotwise surface, and none was returned in any CORS
+    access-control-allow-headers list (which enumerate authorization, content-type,
+    mcp-protocol-version, mcp-session-id on the MCP servers and Origin,
+    X-Requested-With, Content-Type, Accept, Authorization, Content-Encoding,
+    x-apollo-tracing, X-Payload-HTTP-Method-Override on the CMS API). No Idempotency
+    pointer is emitted.
+
+pagination:
+  surface: https://spotwise.ai/api/<collection>
+  style: page-number with limit
+  request_params:
+  - limit
+  - page
+  - depth
+  - sort
+  - where[...]
+  - select[...]
+  response_fields:
+  - docs
+  - totalDocs
+  - totalPages
+  - limit
+  - page
+  - pagingCounter
+  - hasNextPage
+  - hasPrevPage
+  - nextPage
+  - prevPage
+  cursor: false
+  note: standard Payload CMS 3 REST envelope; the same shape is returned by every
+    public collection
+
+field_selection:
+  supported: true
+  mechanism: select[<field>]=true query parameters, plus depth=<n> to control
+    relationship population
+  sparse_fieldsets: true
+
+graphql:
+  endpoint: https://spotwise.ai/api/graphql
+  methods: POST only (GET returns 405)
+  introspection: >-
+    disabled — POST {__schema{queryType{name}}} returns '{"errors":[{"message":"GraphQL
+    introspection is not allowed, but the query contained __schema or __type"}]}'
+  anonymous_queries: >-
+    permitted for published content (verified — Posts(limit:2) returned totalDocs 49)
+  note: because introspection is off and no SDL is published, the schema cannot be
+    obtained by a machine; no SDL has been fabricated
+
+request_id_tracing:
+  provider_header: null
+  edge_header: x-azure-ref (Azure Front Door correlation id, present on every
+    spotwise.ai response)
+  app_headers_observed:
+  - X-Span-Start-Offset
+  - X-Span-End-Offset
+  note: the app host exposes span-offset headers via
+    access-control-expose-headers but publishes no tracing guidance
+
+versioning:
+  see: lifecycle/spotwise-inc-lifecycle.yml
+  summary: CMS API unversioned; attribution relay uses /api/v1; MCP negotiates via the
+    mcp-protocol-version header
+
+error_envelope:
+  consistent: false
+  see: errors/spotwise-inc-problem-types.yml
+
+rate_limit_signaling:
+  headers_observed: []
+  see: rate-limits/spotwise-inc-rate-limits.yml
+
+content_negotiation:
+  mcp_accept: application/json, text/event-stream (streamable HTTP transport)
+  session_header: mcp-session-id (exposed via access-control-expose-headers on the CMS
+    MCP server)
+
+security_headers_observed:
+  app.spotwise.ai:
+    strict-transport-security: max-age=31536000; includeSubDomains
+    x-frame-options: DENY
+    x-content-type-options: nosniff
+    referrer-policy: strict-origin-when-cross-origin
+    cross-origin-opener-policy: same-origin
+    cross-origin-resource-policy: same-origin
+    x-permitted-cross-domain-policies: none
+  spotwise.ai:
+    strict-transport-security: not sent on the marketing/CMS host
+
+cross_links:
+  errors: errors/spotwise-inc-problem-types.yml
+  lifecycle: lifecycle/spotwise-inc-lifecycle.yml
+  authentication: authentication/spotwise-inc-authentication.yml
+  scopes: scopes/spotwise-inc-scopes.yml
+  rate_limits: rate-limits/spotwise-inc-rate-limits.yml

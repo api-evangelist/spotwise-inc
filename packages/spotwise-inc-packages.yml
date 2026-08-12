@@ -1,0 +1,57 @@
+generated: '2026-08-12'
+method: searched
+source: npm registry search, PyPI, RubyGems, crates.io, Packagist, GitHub org
+  enumeration, and the Spotwise site
+package_count: 1
+official_sdk_count: 0
+note: >-
+  Spotwise publishes NO client SDK in any package registry. Searched and confirmed
+  empty: npm (registry search "spotwise" — 0 results), PyPI (/pypi/spotwise/json —
+  404), RubyGems (404), crates.io (0), Packagist (no Spotwise-owned package). The
+  GitHub organisation github.com/SpotwiseAI (blog: app.spotwise.ai, created
+  2024-10-27) holds three repositories and ALL THREE ARE FORKS of third-party projects
+  (Olaf acoustic fingerprinting, OpenHands agent-canvas, junior) — there is no
+  first-party source, no SDK and no .proto. NOTE for future rounds:
+  github.com/spotwise is a DIFFERENT company (Spotwise, Göteborg, spotwise.com,
+  created 2013) and must not be attributed here.
+  The single entry below is the one first-party distributable Spotwise ships, and it
+  has no registry at all.
+
+packages:
+- name: SwRelay attribution relay
+  registry: cdn
+  official: true
+  language: javascript
+  distribution: script tag from Spotwise's own attribution host
+  url: https://spotwise-attribution-api-bmexgmdgfqhgepc5.germanywestcentral-01.azurewebsites.net/static/relay.js
+  version: null
+  published: null
+  note: >-
+    Not published to npm, jsDelivr or unpkg — there is no registry metadata endpoint to
+    query, and the URL carries no version segment or query pin, so the build floats to
+    whatever the host currently serves. That is the finding: a consumer embedding this
+    script cannot determine which version they are running or when it last changed.
+    Checked, nothing to record — not unchecked.
+  see: components/spotwise-inc-components.yml
+
+registries_searched:
+- registry: npm
+  query: spotwise
+  results: 0
+- registry: pypi
+  package: spotwise
+  status: 404
+- registry: rubygems
+  package: spotwise
+  status: 404
+- registry: crates.io
+  query: spotwise
+  results: 0
+- registry: packagist
+  query: spotwise
+  results: 0 (matches were unrelated projects)
+- registry: github
+  org: SpotwiseAI
+  status: 200
+  first_party_repos: 0
+  forks: 3

@@ -1,0 +1,35 @@
+generated: '2026-08-12'
+method: probed
+source: https://spotwise.ai/faq, https://spotwise.ai/api/* response headers,
+  https://app.spotwise.ai/api/mcp response headers
+docs: null
+limit_count: 0
+note: >-
+  Spotwise publishes no rate-limit documentation of any kind — there is no developer
+  portal, no API reference and no fair-use page. Live responses were inspected for a
+  runtime signal and none was found: no RateLimit-*, no X-RateLimit-*, no Retry-After
+  and no 429 was observed on any surface probed on 2026-08-12. An integrating agent has
+  no published number and no runtime header to back off against; this is an honest
+  zero, not an unchecked field.
+
+limits: []
+
+headers_observed:
+  ratelimit_standard: false
+  x_ratelimit: false
+  retry_after: false
+  observed_on:
+  - https://spotwise.ai/api/posts
+  - https://spotwise.ai/api/graphql
+  - https://spotwise.ai/api/mcp
+  - https://app.spotwise.ai/api/mcp
+
+exhaustion_status_code: unknown
+
+evidence:
+- url: https://spotwise.ai/api/posts?limit=1
+  status: 200
+- url: https://app.spotwise.ai/api/mcp
+  status: 401
+- url: https://spotwise.ai/faq
+  status: 200

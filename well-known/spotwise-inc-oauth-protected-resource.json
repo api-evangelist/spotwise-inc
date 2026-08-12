@@ -1,0 +1,18 @@
+{
+    "authorization_servers": [
+        "https://spotwise.ai/api/auth"
+    ],
+    "bearer_methods_supported": [
+        "header"
+    ],
+    "resource": "https://spotwise.ai/api/mcp",
+    "resource_name": "Spotwise CMS MCP",
+    "scopes_supported": [
+        "openid",
+        "profile",
+        "email",
+        "offline_access",
+        "mcp:content.read",
+        "mcp:content.write"
+    ]
+}

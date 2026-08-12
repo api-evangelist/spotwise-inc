@@ -1,0 +1,125 @@
+generated: '2026-08-12'
+method: probed
+source: >-
+  https://spotwise.ai/.well-known/oauth-protected-resource,
+  https://app.spotwise.ai/.well-known/oauth-protected-resource, and live POST
+  jsonrpc tools/list probes of both /api/mcp endpoints
+name: Spotwise Model Context Protocol servers
+status: published
+note: >-
+  Spotwise runs TWO distinct remote MCP servers, each advertised by its own RFC 9728
+  protected-resource metadata document and each protected by its own RFC 8414
+  authorization server. Both were confirmed live: an unauthenticated
+  POST {"jsonrpc":"2.0","id":1,"method":"tools/list"} returns HTTP 401 with a
+  WWW-Authenticate Bearer challenge naming the resource_metadata URL — the MCP
+  authorization handshake behaving exactly as specified. The tool list and
+  inputSchemas are therefore AUTH-GATED and are NOT recorded here; obtaining them
+  requires an interactive OAuth authorization_code + PKCE flow with a Spotwise
+  account. No tool names have been guessed or derived.
+  Spotwise's own launch announcement states the posture plainly: "All Spotwise data
+  and workflows are available through an open API and a Model Context Protocol
+  server." (https://spotwise.ai/news/spotwise-launches-the-agentic-operating-system-for-media)
+
+servers:
+- name: Spotwise Remote MCP
+  url: https://app.spotwise.ai/api/mcp
+  transport: streamable-http
+  hosted: true
+  resource_metadata: https://app.spotwise.ai/.well-known/oauth-protected-resource
+  resource_documentation: https://app.spotwise.ai/docs/mcp-oauth
+  resource_documentation_status: 404
+  resource_documentation_note: the metadata document points at a docs page that returns
+    404 to an anonymous client; it is presumably behind the app session
+  authorization_server: https://app.spotwise.ai/api/auth
+  scopes_supported:
+  - openid
+  - profile
+  - email
+  - offline_access
+  bearer_methods_supported:
+  - header
+  probe:
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+    accept: application/json, text/event-stream
+    http_status: 401
+    www_authenticate: Bearer resource_metadata="https://app.spotwise.ai/.well-known/oauth-protected-resource/api/mcp"
+    body_returned: '{"error":"unauthorized","message":"OAuth bearer token required"}'
+    fetched: '2026-08-12'
+  allowed_methods:
+  - POST
+  tools: []
+  tools_state: auth-gated
+  scope_note: this server declares only the identity scopes; access to the underlying
+    ad-detection, lead, contact and CRM surface is presumably bound to the
+    authenticated user's Spotwise workspace rather than to named MCP scopes
+
+- name: Spotwise CMS MCP
+  url: https://spotwise.ai/api/mcp
+  transport: streamable-http
+  hosted: true
+  resource_metadata: https://spotwise.ai/.well-known/oauth-protected-resource
+  authorization_server: https://spotwise.ai/api/auth
+  runtime: Next.js + Payload CMS (x-powered-by "Next.js, Payload")
+  scopes_supported:
+  - openid
+  - profile
+  - email
+  - offline_access
+  - mcp:content.read
+  - mcp:content.write
+  bearer_methods_supported:
+  - header
+  probe:
+    method: POST
+    body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+    accept: application/json, text/event-stream
+    http_status: 401
+    www_authenticate: Bearer resource_metadata="https://spotwise.ai/.well-known/oauth-protected-resource/api/mcp"
+    body_returned: '{"errors":[{"message":"Unauthorized, you must be logged in to make
+      this request."}]}'
+    fetched: '2026-08-12'
+  allowed_methods:
+  - GET
+  - POST
+  - DELETE
+  - OPTIONS
+  cors:
+    allow_origin: '*'
+    allow_headers:
+    - authorization
+    - content-type
+    - mcp-protocol-version
+    - mcp-session-id
+    expose_headers:
+    - WWW-Authenticate
+    - mcp-session-id
+  tools: []
+  tools_state: auth-gated
+  scope_note: the two mcp:content.* scopes are the only product-shaped MCP scopes
+    Spotwise publishes anywhere; they govern read and write access to the marketing
+    site's Payload CMS content collections
+
+authorization:
+  flow: authorization_code
+  pkce: S256
+  dynamic_client_registration: true
+  registration_endpoint_auth: none
+  refresh_tokens: true
+  see: authentication/spotwise-inc-authentication.yml
+
+related_surfaces:
+  mcp_auth_ui_path: /mcp-auth/* (disallowed in https://spotwise.ai/robots.txt — the
+    browser leg of the MCP OAuth consent flow)
+
+evidence:
+- url: https://spotwise.ai/.well-known/oauth-protected-resource
+  status: 200
+- url: https://app.spotwise.ai/.well-known/oauth-protected-resource
+  status: 200
+- url: https://spotwise.ai/api/mcp
+  status: 401
+- url: https://app.spotwise.ai/api/mcp
+  status: 401
+- url: https://spotwise.ai/news/spotwise-launches-the-agentic-operating-system-for-media
+  status: 200

@@ -1,0 +1,74 @@
+generated: '2026-08-12'
+method: probed
+source: >-
+  https://spotwise.ai/.well-known/oauth-authorization-server,
+  https://spotwise.ai/.well-known/oauth-protected-resource,
+  https://app.spotwise.ai/.well-known/oauth-authorization-server,
+  https://app.spotwise.ai/.well-known/oauth-protected-resource
+docs: null
+docs_note: >-
+  Spotwise publishes no scopes/permissions reference page. Every scope below was read
+  directly from a live RFC 8414 / RFC 9728 metadata document; descriptions are stated
+  as the standard meaning of the scope name, and the two mcp:content.* descriptions
+  are inferred from the resource_name ("Spotwise CMS MCP") of the resource that
+  declares them. No scope has been invented.
+
+authorization_servers:
+- issuer: https://spotwise.ai/api/auth
+  resource: https://spotwise.ai/api/mcp
+  resource_name: Spotwise CMS MCP
+  scopes:
+  - name: openid
+    description: OpenID Connect authentication; issues an ID token
+    standard: OIDC Core
+  - name: profile
+    description: basic profile claims (name, given_name, family_name, picture)
+    standard: OIDC Core
+  - name: email
+    description: email and email_verified claims
+    standard: OIDC Core
+  - name: offline_access
+    description: permits issuance of a refresh token for long-lived agent sessions
+    standard: OIDC Core
+  - name: mcp:content.read
+    description: read access to the Spotwise site content collections exposed over the
+      CMS MCP server
+    product_scope: true
+  - name: mcp:content.write
+    description: write access to the Spotwise site content collections exposed over the
+      CMS MCP server
+    product_scope: true
+
+- issuer: https://app.spotwise.ai/api/auth
+  resource: https://app.spotwise.ai/api/mcp
+  resource_name: Spotwise Remote MCP
+  scopes:
+  - name: openid
+    description: OpenID Connect authentication; issues an ID token
+    standard: OIDC Core
+  - name: profile
+    description: basic profile claims
+    standard: OIDC Core
+  - name: email
+    description: email and email_verified claims
+    standard: OIDC Core
+  - name: offline_access
+    description: permits issuance of a refresh token
+    standard: OIDC Core
+  note: >-
+    The product MCP server declares NO product-shaped scopes. Authorization to the
+    ad-detection, lead-list, contact-finder and CRM surface is therefore bound to the
+    authenticated user's workspace rather than expressed as delegatable OAuth scopes —
+    an agent cannot request least-privilege access to a subset of the product.
+
+summary:
+  scope_count: 6
+  product_scopes: 2
+  identity_scopes: 4
+  least_privilege_available_on_product_server: false
+
+evidence:
+- url: https://spotwise.ai/.well-known/oauth-authorization-server
+  status: 200
+- url: https://app.spotwise.ai/.well-known/oauth-protected-resource
+  status: 200

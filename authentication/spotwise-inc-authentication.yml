@@ -1,0 +1,163 @@
+generated: '2026-08-12'
+method: probed
+source: >-
+  https://spotwise.ai/.well-known/oauth-authorization-server,
+  https://app.spotwise.ai/.well-known/oauth-authorization-server,
+  https://spotwise.ai/api/auth/jwks, and live 401/403 probes of the MCP, CMS and
+  attribution surfaces
+note: >-
+  Derived entirely from documents Spotwise itself serves. There is no published
+  OpenAPI and no public developer docs page, so nothing here comes from a written
+  auth guide — every field below was read off a live RFC 8414 / RFC 9728 metadata
+  document or observed on a real HTTP response.
+
+schemes:
+- id: spotwise_oauth2
+  type: oauth2
+  applies_to:
+  - https://spotwise.ai/api/mcp
+  - https://spotwise.ai/api (Payload CMS admin/write surface)
+  issuer: https://spotwise.ai/api/auth
+  flows:
+    authorization_code:
+      authorization_url: https://spotwise.ai/api/auth/oauth2/authorize
+      token_url: https://spotwise.ai/api/auth/oauth2/token
+      refresh_url: https://spotwise.ai/api/auth/oauth2/token
+      pkce: required-capable — code_challenge_methods_supported [S256]
+      scopes:
+        openid: OpenID Connect identity
+        profile: basic profile claims
+        email: email address claim
+        offline_access: refresh-token issuance
+        "mcp:content.read": read the site's Payload CMS content collections over MCP
+        "mcp:content.write": write the site's Payload CMS content collections over MCP
+  grant_types_supported:
+  - authorization_code
+  - refresh_token
+  token_endpoint_auth_methods_supported:
+  - none
+  - client_secret_basic
+  - client_secret_post
+  bearer_methods_supported:
+  - header
+
+- id: spotwise_app_oauth2
+  type: oauth2
+  applies_to:
+  - https://app.spotwise.ai/api/mcp
+  - https://app.spotwise.ai (product application)
+  issuer: https://app.spotwise.ai/api/auth
+  flows:
+    authorization_code:
+      authorization_url: https://app.spotwise.ai/api/auth/oauth2/authorize
+      token_url: https://app.spotwise.ai/api/auth/oauth2/token
+      refresh_url: https://app.spotwise.ai/api/auth/oauth2/token
+      pkce: required-capable — code_challenge_methods_supported [S256]
+      scopes:
+        openid: OpenID Connect identity
+        profile: basic profile claims
+        email: email address claim
+        offline_access: refresh-token issuance
+  grant_types_supported:
+  - authorization_code
+  - refresh_token
+  token_endpoint_auth_methods_supported:
+  - none
+  - client_secret_basic
+  - client_secret_post
+  bearer_methods_supported:
+  - header
+
+- id: spotwise_none
+  type: none
+  applies_to:
+  - https://spotwise.ai/api (Payload CMS public READ surface)
+  note: >-
+    The published-content read side of the Payload REST + GraphQL API answers
+    anonymously (GET /api/posts, /api/news, /api/pages, /api/media, /api/categories,
+    /api/forms, /api/search, /api/redirects, /api/insights all return 200 without a
+    token). /api/users returns 403 "You are not allowed to perform this action", so
+    the access-control layer is present and selective, not absent.
+
+endpoints:
+  authorize: https://spotwise.ai/api/auth/oauth2/authorize
+  token: https://spotwise.ai/api/auth/oauth2/token
+  jwks: https://spotwise.ai/api/auth/jwks
+  registration: https://spotwise.ai/api/auth/oauth2/register
+  introspection: https://spotwise.ai/api/auth/oauth2/introspect
+  revocation: https://spotwise.ai/api/auth/oauth2/revoke
+  userinfo: https://spotwise.ai/api/auth/oauth2/userinfo
+  end_session: https://spotwise.ai/api/auth/oauth2/end-session
+
+tokens:
+  id_token_signing_alg_values_supported:
+  - EdDSA
+  jwks_key:
+    kty: OKP
+    crv: Ed25519
+    alg: EdDSA
+  claims_supported:
+  - sub
+  - iss
+  - aud
+  - exp
+  - iat
+  - sid
+  - scope
+  - azp
+  - email
+  - email_verified
+  - name
+  - picture
+  - family_name
+  - given_name
+  subject_types_supported:
+  - public
+
+capabilities:
+  dynamic_client_registration: true
+  dynamic_client_registration_auth: none (public registration permitted)
+  pkce: S256
+  introspection: true
+  revocation: true
+  rp_initiated_logout: true
+  authorization_response_iss_parameter_supported: true
+  response_types_supported:
+  - code
+  response_modes_supported:
+  - query
+  prompt_values_supported:
+  - login
+  - consent
+  - create
+  - select_account
+  - none
+  acr_values_supported:
+  - urn:mace:incommon:iap:bronze
+
+api_keys:
+  published: false
+  note: no API-key programme, key prefix, or credential-issuance page is published
+    anywhere on the public surface
+
+oidc:
+  discovery_document_published: false
+  note: >-
+    /.well-known/openid-configuration returns 404 on every host, but the RFC 8414
+    authorization-server document carries OIDC fields (userinfo_endpoint,
+    id_token_signing_alg_values_supported, claims_supported, end_session_endpoint),
+    so the deployment is OIDC-capable while only advertising the OAuth metadata path.
+
+evidence:
+- url: https://spotwise.ai/.well-known/oauth-authorization-server
+  status: 200
+- url: https://app.spotwise.ai/.well-known/oauth-authorization-server
+  status: 200
+- url: https://spotwise.ai/api/auth/jwks
+  status: 200
+- url: https://spotwise.ai/api/mcp
+  status: 401
+- url: https://spotwise.ai/api/users
+  status: 403
+- url: https://spotwise.ai/.well-known/openid-configuration
+  status: 404

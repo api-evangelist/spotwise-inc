@@ -1,0 +1,156 @@
+generated: '2026-08-12'
+method: probed
+source: live probes of Spotwise's own hosts, plus https://spotwise.ai/faq and
+  https://spotwise.ai/security for stated compliance posture
+note: >-
+  Assertions below are graded against what Spotwise actually serves. Where a standard
+  is claimed by the company rather than observed on the wire, that is stated in the
+  evidence. Nothing is asserted from a marketing page alone.
+
+standards:
+- id: rfc8414
+  name: OAuth 2.0 Authorization Server Metadata
+  conforms: true
+  evidence: https://spotwise.ai/.well-known/oauth-authorization-server and
+    https://app.spotwise.ai/.well-known/oauth-authorization-server both return 200 with
+    a complete metadata document (issuer, authorization_endpoint, token_endpoint,
+    jwks_uri, registration_endpoint, introspection_endpoint, revocation_endpoint)
+
+- id: rfc9728
+  name: OAuth 2.0 Protected Resource Metadata
+  conforms: true
+  evidence: both hosts serve /.well-known/oauth-protected-resource AND the
+    resource-scoped /.well-known/oauth-protected-resource/api/mcp path named in the
+    WWW-Authenticate challenge, with authorization_servers, resource,
+    bearer_methods_supported and scopes_supported
+
+- id: rfc6750
+  name: OAuth 2.0 Bearer Token Usage
+  conforms: true
+  evidence: 401 responses on both /api/mcp endpoints carry a WWW-Authenticate Bearer
+    challenge with a resource_metadata parameter
+
+- id: rfc7636
+  name: PKCE
+  conforms: true
+  evidence: code_challenge_methods_supported ["S256"] in both authorization-server
+    metadata documents
+
+- id: rfc7591
+  name: OAuth 2.0 Dynamic Client Registration
+  conforms: true
+  evidence: registration_endpoint advertised on both issuers with
+    token_endpoint_auth_methods_supported including "none"
+
+- id: rfc7662
+  name: OAuth 2.0 Token Introspection
+  conforms: true
+  evidence: introspection_endpoint advertised with client_secret_basic /
+    client_secret_post auth
+
+- id: rfc7009
+  name: OAuth 2.0 Token Revocation
+  conforms: true
+  evidence: revocation_endpoint advertised on both issuers
+
+- id: oidc-core
+  name: OpenID Connect Core
+  conforms: partial
+  evidence: the authorization-server metadata carries userinfo_endpoint,
+    id_token_signing_alg_values_supported (EdDSA), claims_supported, subject_types_supported
+    and end_session_endpoint, but /.well-known/openid-configuration returns 404 on
+    every host, so OIDC Discovery (the document an OIDC relying party looks for) is not
+    served
+
+- id: mcp
+  name: Model Context Protocol
+  conforms: true
+  evidence: two remote MCP servers (https://spotwise.ai/api/mcp,
+    https://app.spotwise.ai/api/mcp) implement the MCP authorization spec end to end —
+    protected-resource metadata, bearer challenge, mcp-protocol-version and
+    mcp-session-id headers, streamable-HTTP Accept negotiation. Tool schemas are
+    auth-gated and were not retrieved.
+
+- id: a2a
+  name: A2A Agent Card
+  conforms: false
+  evidence: /.well-known/agent-card.json and /.well-known/agent.json return 404 on
+    spotwise.ai, app.spotwise.ai and the attribution host
+
+- id: openapi
+  name: OpenAPI
+  conforms: false
+  evidence: >-
+    no OpenAPI/Swagger document is served at any of /openapi.json, /openapi.yaml,
+    /swagger.json, /v1/openapi.json, /api-docs, /docs or /redoc on any host; the
+    attribution service root explicitly reports "docs_enabled" false
+
+- id: graphql
+  name: GraphQL
+  conforms: partial
+  evidence: https://spotwise.ai/api/graphql serves live GraphQL over POST, but
+    introspection is disabled and no SDL is published, so the schema is not
+    machine-discoverable
+
+- id: rfc9457
+  name: Problem Details for HTTP APIs
+  conforms: false
+  evidence: three different bespoke JSON error envelopes observed; no
+    application/problem+json anywhere (see errors/spotwise-inc-problem-types.yml)
+
+- id: rfc9116
+  name: security.txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on every host
+
+- id: rfc8594
+  name: Sunset HTTP Header
+  conforms: false
+  evidence: no Deprecation or Sunset headers observed; no deprecation policy published
+
+- id: idempotency
+  name: Idempotency keys
+  conforms: false
+  evidence: no idempotency header documented or advertised in any CORS allow-headers
+    list
+
+- id: pagination
+  name: Pagination
+  conforms: true
+  evidence: page/limit pagination with a complete metadata envelope (totalDocs,
+    totalPages, hasNextPage, nextPage, ...) on every public CMS collection
+
+- id: gdpr
+  name: GDPR
+  conforms: claimed
+  evidence: >-
+    https://spotwise.ai/faq — "Spotwise is an EU-based company, and our practices are
+    designed to align with GDPR". Self-attested alignment, not an audited certification.
+
+- id: soc2
+  name: SOC 2 Type II
+  conforms: false
+  evidence: https://spotwise.ai/faq — "Not yet - SOC 2 Type II and ISO 27001 are both
+    in progress ... we will not show you a badge we have not earned"
+
+- id: iso27001
+  name: ISO/IEC 27001
+  conforms: false
+  evidence: same FAQ answer — in progress, not certified
+
+- id: eu-ai-act
+  name: EU AI Act
+  conforms: claimed
+  evidence: https://spotwise.ai/faq — "we are aligning with the EU AI Act ahead of its
+    full application on 2 August 2026"
+
+summary:
+  conforms_count: 9
+  partial_count: 2
+  fails_count: 6
+  claimed_only: 2
+  headline: >-
+    Spotwise is unusually strong on the OAuth/MCP authorization stack and completely
+    absent on the API-description stack. It ships a spec-correct MCP authorization
+    implementation on two hosts while publishing no OpenAPI, no GraphQL SDL, no error
+    contract and no security.txt.

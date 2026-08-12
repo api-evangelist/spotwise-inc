@@ -1,0 +1,116 @@
+generated: '2026-08-12'
+method: probed
+source: live GET probes of /.well-known/* on every Spotwise host
+note: >-
+  Spotwise serves REAL RFC 8414 (OAuth 2.0 Authorization Server Metadata) and RFC 9728
+  (OAuth 2.0 Protected Resource Metadata) documents from both spotwise.ai and
+  app.spotwise.ai. Those two documents are the only machine-readable discovery surface
+  the company publishes, and they are what exposed the two remote MCP servers. No
+  security.txt, no openid-configuration, no api-catalog, no ai-plugin.json.
+  spotwise.ai and app.spotwise.ai return a Next.js HTML 404 shell for every other
+  /.well-known/* path, which is recorded below as a miss, not a hit.
+
+hosts:
+- host: spotwise.ai
+  paths:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json
+    document: true
+    file: well-known/spotwise-inc-oauth-authorization-server.json
+    spec: RFC 8414
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: application/json; charset=utf-8
+    document: true
+    file: well-known/spotwise-inc-oauth-protected-resource.json
+    spec: RFC 9728
+    resource_name: Spotwise CMS MCP
+  - path: /.well-known/oauth-protected-resource/api/mcp
+    status: 200
+    content_type: application/json; charset=utf-8
+    document: true
+    note: identical body to /.well-known/oauth-protected-resource; the path advertised
+      by the WWW-Authenticate challenge on POST https://spotwise.ai/api/mcp
+  - path: /.well-known/security.txt
+    status: 404
+    document: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    document: false
+  - path: /.well-known/api-catalog
+    status: 404
+    document: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    document: false
+  - path: /.well-known/agent.json
+    status: 404
+    document: false
+  - path: /.well-known/mcp.json
+    status: 404
+    document: false
+
+- host: app.spotwise.ai
+  paths:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json; charset=utf-8
+    document: true
+    file: well-known/spotwise-inc-app-oauth-authorization-server.json
+    spec: RFC 8414
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: application/json; charset=utf-8
+    document: true
+    file: well-known/spotwise-inc-app-oauth-protected-resource.json
+    spec: RFC 9728
+    resource_name: Spotwise Remote MCP
+  - path: /.well-known/oauth-protected-resource/api/mcp
+    status: 200
+    content_type: application/json; charset=utf-8
+    document: true
+  - path: /.well-known/security.txt
+    status: 404
+    document: false
+  - path: /.well-known/openid-configuration
+    status: 404
+    document: false
+  - path: /.well-known/api-catalog
+    status: 404
+    document: false
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    document: false
+  - path: /.well-known/agent.json
+    status: 404
+    document: false
+
+- host: spotwise-attribution-api-bmexgmdgfqhgepc5.germanywestcentral-01.azurewebsites.net
+  note: the attribution/measurement relay host referenced from spotwise.ai's own page
+    scripts; serves a JSON service index at / but no /.well-known/* documents
+  paths:
+  - path: /.well-known/security.txt
+    status: 404
+    document: false
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    document: false
+  - path: /.well-known/agent-card.json
+    status: 404
+    document: false
+
+summary:
+  hosts_probed: 3
+  documents_found: 6
+  security_txt: false
+  openid_configuration: false
+  api_catalog: false
+  agent_card: false
+  oauth_metadata: true

@@ -1,0 +1,86 @@
+generated: '2026-08-12'
+method: probed
+source: https://spotwise.ai/ page source (SwRelayConfig bootstrap) and the
+  first-party relay script it loads
+note: >-
+  Spotwise ships one client-side embeddable component: a first-party browser
+  attribution relay that Spotwise runs on its own site and installs on customer sites
+  to tie broadcast ad airings to on-site visits. It is not documented on any developer
+  page — the surface below was read from the shipped script and from the inline
+  bootstrap config on Spotwise's own pages. No hosted UI widgets, embedded dashboards
+  or element libraries are published.
+
+families:
+- name: Attribution relay
+  kind: script tag / browser JS
+  description: >-
+    A best-effort pageview and conversion-event relay. It mints a first-party visitor
+    id and session id in browser storage, builds an event payload, and POSTs it to the
+    Spotwise attribution endpoint. The script explicitly refuses to throw into the host
+    page ("Best-effort tracking only. Never block or break the host page.").
+  loader: https://spotwise-attribution-api-bmexgmdgfqhgepc5.germanywestcentral-01.azurewebsites.net/static/relay.js
+  loader_status: 200
+  loader_bytes: 11482
+  versioned_url: false
+  versioned_note: the loader URL is unpinned and floats to whatever the host currently
+    serves; a consumer cannot tell which build they are running
+  global: window.SwRelay
+  config_global: window.SwRelayConfig (window.SwPixelConfig accepted as an alias)
+  config:
+  - key: endpoint
+    default: /api/v1/pixel
+    description: absolute or relative URL the event is POSTed to
+  - key: brandKey
+    required: true
+    description: the Spotwise brand this site's traffic is attributed to
+  - key: siteId
+    required: true
+    description: the registered tracked-site identifier
+  - key: sessionTimeoutMinutes
+    default: 30
+  - key: visitorTtlDays
+    default: 30
+  methods:
+  - signature: SwRelay(command, eventType, payload)
+    commands:
+    - emit
+    - event
+    - page
+    - pageview
+  - signature: SwRelay.emit(eventType, payload)
+  - signature: SwRelay.page(payload)
+  queueing: supports the standard stub-and-queue pattern via SwRelay.q, flushed on boot
+  auto_fires: a "pageview" event on DOMContentLoaded
+  promoted_fields:
+    note: the relay normalises common ecommerce field aliases into a canonical outgoing
+      name, which is the closest thing Spotwise publishes to a conversion event schema
+    mappings:
+      profileId: [profileId, userId, user_id]
+      amount: [amount, value, event_value]
+      currencyCode: [currencyCode, currency, event_currency]
+      referenceId: [referenceId, id, event_external_id]
+      itemCount: [itemCount, quantity, event_quantity]
+      promoCode: [promoCode, discountCode, discount_code]
+      firstOrder: [firstOrder, isNewCustomer, is_new_customer]
+      catalogId: [catalogId, productId, product_id]
+      itemName: [itemName, productName, product_name]
+      itemType: [itemType, productType, product_type]
+      itemBrand: [itemBrand, productVendor, product_vendor]
+      optionId: [optionId, variantId, variant_id]
+      optionName: [optionName, variantName, variant_name]
+      referenceCode: [referenceCode, code, event_code]
+      itemCategory: [itemCategory, category, event_category]
+      consentState: [consentState, gpp_consent]
+      items: [items, lineItems, line_items]
+  install_support:
+    note: the attribution service exposes install-helper endpoints that generate the
+      snippet and a Google Tag Manager variant, plus an install-verification check
+    gtm_supported: true
+
+component_count: 1
+
+evidence:
+- url: https://spotwise.ai/
+  status: 200
+- url: https://spotwise-attribution-api-bmexgmdgfqhgepc5.germanywestcentral-01.azurewebsites.net/static/relay.js
+  status: 200

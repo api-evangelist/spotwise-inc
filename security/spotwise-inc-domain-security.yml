@@ -1,4 +1,4 @@
-generated: '2026-07-21'
+generated: '2026-08-12'
 method: probed
 source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
 hosts:
@@ -7,6 +7,24 @@ hosts:
   tls_version: TLSv1.3
   cert_expires: Sep 11 23:59:59 2026 GMT
   hsts: false
+- host: app.spotwise.ai
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Dec  7 23:59:59 2026 GMT
+  hsts: false
+  hsts_correction:
+    observed: true
+    header: 'strict-transport-security: max-age=31536000; includeSubDomains'
+    note: >-
+      The automated probe reads GET https://app.spotwise.ai/, which is a bare 307
+      redirect to /auth/sign-in carrying no headers, so it records hsts:false. Every
+      real application response from this host DOES send HSTS with a one-year max-age
+      and includeSubDomains, verified on GET /docs and POST /api/mcp on 2026-08-12,
+      alongside x-frame-options: DENY, x-content-type-options: nosniff,
+      referrer-policy: strict-origin-when-cross-origin, cross-origin-opener-policy and
+      cross-origin-resource-policy: same-origin. Read hsts:false on this host as a
+      probe artefact, not a finding.
+  hsts_effective: true
 domains:
 - domain: spotwise.ai
   dnssec: false

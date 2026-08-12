@@ -1,0 +1,44 @@
+generated: '2026-08-12'
+method: searched
+source: https://spotwise.ai/faq
+plan_count: 0
+pricing_page: null
+note: >-
+  Spotwise publishes no pricing page and no plans. The company states the posture
+  itself in its own FAQ, verbatim: "Spotwise shares pricing on request. Plans are
+  shaped around your market footprint and the stations you actually compete with, so
+  the right number depends on your setup. Book a demo and we will walk you through
+  it." There is no self-serve signup, no free tier and no published quota; the only
+  commercial entry point is a demo booking form. https://spotwise.ai/calculator is a
+  revenue/ROI estimator for the buyer's own market, not a price calculator — it
+  publishes no Spotwise price.
+
+plans: []
+
+commercial_model:
+  self_serve: false
+  free_tier: false
+  trial_published: false
+  quote_based: true
+  entry_point: https://spotwise.ai/demo
+  contact: hello@spotwise.ai
+  onboarding: guided — assigned "Media Engineer" embeds with the customer team; the
+    FAQ states "there is no integration you manage alone"
+  public_free_surface: >-
+    https://spotwise.ai/lv/politika — a free, public, no-login political radio-ad
+    tracker Spotwise operates for the Latvian 2026 Saeima election. It is a public
+    data product, not a plan or a tier of the commercial platform.
+
+api_pricing:
+  published: false
+  note: the launch announcement says data and workflows are "available through an open
+    API and a Model Context Protocol server" but no API price, quota, or entitlement
+    is published anywhere
+
+evidence:
+- url: https://spotwise.ai/faq
+  status: 200
+- url: https://spotwise.ai/demo
+  status: 200
+- url: https://spotwise.ai/calculator
+  status: 200

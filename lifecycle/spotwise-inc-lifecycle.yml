@@ -1,0 +1,79 @@
+generated: '2026-08-12'
+method: searched
+source: https://status.spotwise.ai/ (+ https://status.spotwise.ai/index.json)
+note: >-
+  Spotwise runs a real, publicly reachable Better Stack status page on its own
+  subdomain with per-service uptime and dated incident history. It publishes no
+  changelog, no versioning policy, no deprecation policy and no SLA.
+
+status_page:
+  url: https://status.spotwise.ai/
+  provider: Better Stack
+  machine_readable: https://status.spotwise.ai/index.json
+  feed: https://status.spotwise.ai/feed.rss
+  company_name: Spotwise
+  company_url: https://spotwise.ai
+  timezone: Riga
+  created: '2026-04-07'
+  aggregate_state_observed: operational
+  observed: '2026-08-12'
+  components:
+  - name: Dashboard
+    status: operational
+    availability: 0.999544
+  - name: Spotwise API
+    status: operational
+    availability: 0.999811
+  note: >-
+    The status page independently confirms a first-party component literally named
+    "Spotwise API" — corroborating the launch announcement's "open API and a Model
+    Context Protocol server" claim even though no API reference or specification is
+    published.
+  recent_incidents_observed:
+  - component: Spotwise API
+    date: '2026-07-02'
+    duration: 2h15m
+  - component: Spotwise API
+    date: '2026-07-11'
+    duration: 5m
+  - component: Dashboard
+    date: '2026-07-02'
+    duration: 17m
+
+versioning:
+  policy_published: false
+  observed:
+  - surface: https://spotwise.ai/api (Payload CMS REST + GraphQL)
+    scheme: unversioned path
+  - surface: https://app.spotwise.ai/api/mcp and https://spotwise.ai/api/mcp
+    scheme: MCP protocol version negotiated per session via the mcp-protocol-version
+      header (advertised in the CORS allow-headers list)
+  - surface: Spotwise attribution relay
+    scheme: URI path versioning (/api/v1/...)
+
+deprecation:
+  policy_published: false
+  sunset_header_support: not observed
+  deprecated_operations: []
+  note: no deprecation or sunset policy is published; no RFC 8594 Deprecation/Sunset
+    headers were observed on any probed response
+
+sla:
+  published: false
+  note: uptime percentages are shown on the status page but no service-level agreement
+    or credit schedule is published
+
+changelog:
+  published: false
+  note: >-
+    The only dated public record of change is https://spotwise.ai/news (1 release
+    announcement, 2026-07-28) and the incident history on the status page. Neither is
+    an API changelog, so no ChangeLog artifact or pointer is emitted.
+
+evidence:
+- url: https://status.spotwise.ai/
+  status: 200
+- url: https://status.spotwise.ai/index.json
+  status: 200
+- url: https://status.spotwise.ai/feed.rss
+  status: 200

@@ -1,15 +1,16 @@
 aid: spotwise-inc
 accessModel:
-  pricing: unknown
-  onboarding: unknown
+  pricing: quote
+  onboarding: sales-assisted
   trial: false
   try_now: false
   public: false
-  label: Unknown
-  confidence: low
-  source: []
-  generated: '2026-07-22'
-  method: derived
+  label: Quote-only
+  confidence: high
+  source:
+  - https://spotwise.ai/faq
+  generated: '2026-08-12'
+  method: searched
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/spotwise-inc.png
 name: Spotwise, Inc.
 description: >-
@@ -19,19 +20,24 @@ description: >-
   outreach and CRM workflows that sell against it. Built by broadcasters and backed by
   500 Global, the platform packages products including Spotwise aOS, the Spotty
   conversational copilot, Spotwise Intelligence, Lead-list, Contact Finder, Monitors &
-  Signals, and Skills for ad-sales and commercial-leadership teams across 13 countries.
-  Spotwise is a closed SaaS product accessed through app.spotwise.ai; it publishes no
-  public API, developer portal, or specification at this time.
+  Signals, and Skills for ad-sales and commercial-leadership teams across 14 countries.
+  Spotwise ships two OAuth-protected remote Model Context Protocol servers — a product
+  server at app.spotwise.ai/api/mcp and a content server at spotwise.ai/api/mcp — each
+  advertised by RFC 8414 and RFC 9728 metadata documents, plus a publicly readable
+  Payload CMS REST and GraphQL content API on spotwise.ai. It publishes no OpenAPI, no
+  developer portal, no API reference and no SDK, so the product surface its own launch
+  announcement calls "an open API and a Model Context Protocol server" cannot be
+  planned against without an account.
 url: https://raw.githubusercontent.com/api-evangelist/spotwise-inc/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - 500-global
-x-tier: stub
-x-tier-reason: portfolio-lead
+x-tier: profiled
+x-tier-reason: mcp-and-content-api-discovered
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-21'
+modified: '2026-08-12'
 tags:
 - Company
 - Broadcast Media
@@ -41,7 +47,75 @@ tags:
 - Lead Generation
 - Artificial Intelligence
 - Radio
-apis: []
+- Model Context Protocol
+- Agents
+- Attribution
+apis:
+- name: Spotwise Remote MCP
+  description: >-
+    The product Model Context Protocol server for Spotwise aOS — the surface an agent
+    connects to in order to reach Spotwise ad detections, leads, contacts and workflows.
+    Streamable HTTP transport. Every call requires an OAuth 2.0 bearer token; an
+    anonymous tools/list returns 401 with a WWW-Authenticate challenge naming the
+    protected-resource metadata document. The tool list and input schemas are auth-gated
+    and are not published.
+  humanURL: https://spotwise.ai/product/spotwise-aos
+  baseURL: https://app.spotwise.ai/api/mcp
+  tags:
+  - Model Context Protocol
+  - Agents
+  properties:
+  - type: MCPServer
+    url: mcp/spotwise-inc-mcp.yml
+  - type: Authentication
+    url: authentication/spotwise-inc-authentication.yml
+  - type: OAuthScopes
+    url: scopes/spotwise-inc-scopes.yml
+- name: Spotwise CMS MCP
+  description: >-
+    A second remote Model Context Protocol server, over the Spotwise marketing site's
+    Payload CMS content. OAuth 2.0 bearer required. It is the only Spotwise surface that
+    declares product-shaped OAuth scopes — mcp:content.read and mcp:content.write.
+  humanURL: https://spotwise.ai
+  baseURL: https://spotwise.ai/api/mcp
+  tags:
+  - Model Context Protocol
+  - Content
+  properties:
+  - type: MCPServer
+    url: mcp/spotwise-inc-mcp.yml
+  - type: OAuthScopes
+    url: scopes/spotwise-inc-scopes.yml
+- name: Spotwise Content API
+  description: >-
+    Payload CMS 3 REST API behind spotwise.ai. Published-content collections answer
+    anonymously — posts, news, pages, media, categories, forms, search, redirects and
+    insights — with page/limit pagination and a docs/totalDocs/hasNextPage envelope.
+    The users collection is correctly access-controlled and returns 403. No OpenAPI is
+    published for it.
+  humanURL: https://spotwise.ai/blog
+  baseURL: https://spotwise.ai/api
+  tags:
+  - Content
+  - CMS
+  properties:
+  - type: DataModel
+    url: data-model/spotwise-inc-data-model.yml
+  - type: Conventions
+    url: conventions/spotwise-inc-conventions.yml
+- name: Spotwise Content GraphQL
+  description: >-
+    Live GraphQL endpoint served by the same Payload instance. POST only; GET returns
+    405. Anonymous queries against published content succeed. Introspection is disabled
+    and no SDL is published, so the schema is not machine-discoverable.
+  humanURL: https://spotwise.ai/blog
+  baseURL: https://spotwise.ai/api/graphql
+  tags:
+  - GraphQL
+  - Content
+  properties:
+  - type: GraphQL
+    url: https://spotwise.ai/api/graphql
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -51,19 +125,82 @@ common:
 - type: Website
   url: https://spotwise.ai
 - type: Blog
-  url: https://spotwise.ai/news
+  url: https://spotwise.ai/blog
 - type: Support
   url: https://spotwise.ai/faq
 - type: Login
   url: https://app.spotwise.ai
 - type: PrivacyPolicy
-  url: https://spotwise.ai/security
+  url: https://spotwise.ai/privacy-policy
+- type: TermsOfService
+  url: https://spotwise.ai/terms-of-service
+- type: GitHubOrganization
+  url: https://github.com/SpotwiseAI
+- type: StatusPage
+  url: https://status.spotwise.ai/
 - type: TrustCenter
   url: security/spotwise-inc-trust-center.yml
 - type: DomainSecurity
   url: security/spotwise-inc-domain-security.yml
+- type: VulnerabilityDisclosure
+  url: security/spotwise-inc-vulnerability-disclosure.yml
+- type: WellKnown
+  url: well-known/spotwise-inc-well-known.yml
+- type: MCPServer
+  url: mcp/spotwise-inc-mcp.yml
+- type: Authentication
+  url: authentication/spotwise-inc-authentication.yml
+- type: OAuthScopes
+  url: scopes/spotwise-inc-scopes.yml
+- type: Lifecycle
+  url: lifecycle/spotwise-inc-lifecycle.yml
+- type: Conformance
+  url: conformance/spotwise-inc-conformance.yml
+- type: ErrorCatalog
+  url: errors/spotwise-inc-problem-types.yml
+- type: Conventions
+  url: conventions/spotwise-inc-conventions.yml
+- type: DataModel
+  url: data-model/spotwise-inc-data-model.yml
+- type: Components
+  url: components/spotwise-inc-components.yml
+- type: Packages
+  url: packages/spotwise-inc-packages.yml
+- type: Plans
+  url: plans/spotwise-inc-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/spotwise-inc-rate-limits.yml
+- type: LLMsTxt
+  url: llms/spotwise-inc-llms.txt
+x-pointer-notes:
+  omitted_deliberately:
+  - type: OpenAPI
+    reason: no OpenAPI/Swagger document is served on any host (see conformance/)
+  - type: SDKs
+    reason: zero official client libraries in any registry (see packages/)
+  - type: AgentCard
+    reason: /.well-known/agent-card.json and /.well-known/agent.json return 404 on every
+      host — never derived
+  - type: SecurityTxt
+    reason: /.well-known/security.txt returns 404 on every host
+  - type: Security
+    reason: a security contact is published but no vulnerability-disclosure policy,
+      safe harbour, scope statement or bug bounty exists
+  - type: Compliance
+    reason: Spotwise states plainly that it holds no completed certification (SOC 2
+      Type II and ISO 27001 are in progress)
+  - type: Pricing
+    reason: no pricing page exists — quote-only, see plans/
+  - type: DeveloperPortal / Documentation / APIReference / GettingStarted
+    reason: none of these pages exist on the public surface
+  - type: ChangeLog
+    reason: no dated API changelog is published
+  - type: Deprecation
+    reason: no deprecation or sunset policy is published
+  - type: Idempotency
+    reason: no idempotency contract exists on any surface
 x-enrichment:
-  date: '2026-07-21'
-  status: minimal
-  artifacts_added: 2
+  date: '2026-08-12'
+  status: enriched
+  artifacts_added: 19
   pass: local-v1

@@ -1,0 +1,90 @@
+generated: '2026-08-12'
+method: probed
+source: live HTTP responses observed on Spotwise's own hosts (no OpenAPI and no
+  published error reference exist to derive from)
+format: not-rfc9457
+note: >-
+  Spotwise publishes no error reference. Every entry below is an error envelope
+  OBSERVED on a real response during contract discovery on 2026-08-12. Three distinct
+  envelopes are in use across three surfaces, which is itself the finding: an agent
+  integrating Spotwise cannot rely on one error shape. None of them is
+  application/problem+json (RFC 9457); none carries a type URI, a machine-readable
+  code on every surface, or a remediation hint.
+
+envelopes:
+- surface: Payload CMS REST + GraphQL + CMS MCP (https://spotwise.ai/api/*)
+  content_type: application/json
+  shape: '{"errors":[{"message":"<human string>"}]}'
+  machine_code: false
+  note: GraphQL errors additionally carry the standard locations[] array
+- surface: Spotwise application + Remote MCP (https://app.spotwise.ai/*)
+  content_type: application/json; charset=utf-8
+  shape: >-
+    {"error":"<slug>","message":"<human string>"} or {"error":"<human string>","code":"<SLUG>"}
+  machine_code: partial
+  note: two variants observed on the same host — /docs returns {"error","code"} while
+    /api/mcp returns {"error","message"}
+- surface: attribution relay service
+  content_type: application/json
+  shape: >-
+    {"detail":[{"type","loc","msg","input"}]} (FastAPI/Pydantic validation) or
+    {"detail":"<string>"}
+  machine_code: true
+  note: the only surface that returns a structured, field-level, machine-parsable
+    validation error
+
+problem_types:
+- status: 401
+  surface: https://spotwise.ai/api/mcp
+  envelope: '{"errors":[{"message":"Unauthorized, you must be logged in to make this
+    request."}]}'
+  www_authenticate: Bearer resource_metadata="https://spotwise.ai/.well-known/oauth-protected-resource/api/mcp"
+  remediation: complete the OAuth 2.0 authorization_code + PKCE flow against
+    https://spotwise.ai/api/auth and present the token as a bearer header
+- status: 401
+  surface: https://app.spotwise.ai/api/mcp
+  envelope: '{"error":"unauthorized","message":"OAuth bearer token required"}'
+  www_authenticate: Bearer resource_metadata="https://app.spotwise.ai/.well-known/oauth-protected-resource/api/mcp"
+  remediation: same, against https://app.spotwise.ai/api/auth
+- status: 401
+  surface: https://app.spotwise.ai/docs
+  envelope: '{"error":"Unauthorized - Please sign in","code":"UNAUTHORIZED"}'
+  remediation: sign in to the Spotwise application; the product docs are behind the
+    app session
+- status: 403
+  surface: https://spotwise.ai/api/users
+  envelope: '{"errors":[{"message":"You are not allowed to perform this action."}]}'
+  remediation: the collection is access-controlled to authenticated CMS users; not
+    reachable anonymously
+- status: 404
+  surface: https://spotwise.ai/api/<unknown-collection>
+  envelope: '{"message":"Route not found \"/api/globals\""}'
+  remediation: the collection slug does not exist on this Payload instance
+- status: 405
+  surface: https://spotwise.ai/api/graphql (GET)
+  envelope: empty body
+  remediation: GraphQL accepts POST only
+- status: 422
+  surface: attribution relay service
+  envelope: '{"detail":[{"type":"missing","loc":["query","<param>"],"msg":"Field
+    required","input":null}]}'
+  remediation: supply the required query parameters named in loc[]; the response
+    enumerates every missing field
+
+gaps:
+  rfc9457: false
+  error_code_registry_published: false
+  retry_guidance_published: false
+  single_consistent_envelope: false
+
+evidence:
+- url: https://spotwise.ai/api/mcp
+  status: 401
+- url: https://app.spotwise.ai/api/mcp
+  status: 401
+- url: https://spotwise.ai/api/users
+  status: 403
+- url: https://spotwise.ai/api/globals
+  status: 404
+- url: https://spotwise.ai/api/graphql
+  status: 405
