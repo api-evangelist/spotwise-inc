@@ -47,6 +47,18 @@ tags:
 - Lead Generation
 - Artificial Intelligence
 - Radio
+- MCP
+- Agents
+- Attribution
+tags_raw:
+- Company
+- Broadcast Media
+- Advertising
+- Media Monitoring
+- Sales Intelligence
+- Lead Generation
+- Artificial Intelligence
+- Radio
 - Model Context Protocol
 - Agents
 - Attribution
@@ -62,6 +74,9 @@ apis:
   humanURL: https://spotwise.ai/product/spotwise-aos
   baseURL: https://app.spotwise.ai/api/mcp
   tags:
+  - MCP
+  - Agents
+  tags_raw:
   - Model Context Protocol
   - Agents
   properties:
@@ -79,6 +94,9 @@ apis:
   humanURL: https://spotwise.ai
   baseURL: https://spotwise.ai/api/mcp
   tags:
+  - MCP
+  - Content
+  tags_raw:
   - Model Context Protocol
   - Content
   properties:
