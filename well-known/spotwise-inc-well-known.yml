@@ -1,15 +1,18 @@
-generated: '2026-08-12'
+generated: '2026-09-19'
 method: probed
 source: live GET probes of /.well-known/* on every Spotwise host
-note: >-
-  Spotwise serves REAL RFC 8414 (OAuth 2.0 Authorization Server Metadata) and RFC 9728
-  (OAuth 2.0 Protected Resource Metadata) documents from both spotwise.ai and
-  app.spotwise.ai. Those two documents are the only machine-readable discovery surface
-  the company publishes, and they are what exposed the two remote MCP servers. No
-  security.txt, no openid-configuration, no api-catalog, no ai-plugin.json.
-  spotwise.ai and app.spotwise.ai return a Next.js HTML 404 shell for every other
-  /.well-known/* path, which is recorded below as a miss, not a hit.
+note: 'Spotwise serves REAL RFC 8414 (OAuth 2.0 Authorization Server Metadata) and RFC 9728 (OAuth 2.0
+  Protected Resource Metadata) documents from both spotwise.ai and app.spotwise.ai. Those two documents
+  are the only machine-readable discovery surface the company publishes, and they are what exposed the
+  two remote MCP servers. No security.txt, no openid-configuration, no api-catalog, no ai-plugin.json.
+  spotwise.ai and app.spotwise.ai return a Next.js HTML 404 shell for every other /.well-known/* path,
+  which is recorded below as a miss, not a hit.
 
+
+  MCP-host OAuth discovery added 2026-09-19 (roadmap#321/#337): the harvest visits a provider''s primary
+  hosts, and RFC 9728 protected-resource metadata lives on the MCP host, so these documents existed and
+  were invisible to the scorer. Fetched live and validated on `resource`/`issuer`; one negative control
+  per host.'
 hosts:
 - host: spotwise.ai
   paths:
@@ -30,8 +33,8 @@ hosts:
     status: 200
     content_type: application/json; charset=utf-8
     document: true
-    note: identical body to /.well-known/oauth-protected-resource; the path advertised
-      by the WWW-Authenticate challenge on POST https://spotwise.ai/api/mcp
+    note: identical body to /.well-known/oauth-protected-resource; the path advertised by the WWW-Authenticate
+      challenge on POST https://spotwise.ai/api/mcp
   - path: /.well-known/security.txt
     status: 404
     document: false
@@ -53,7 +56,6 @@ hosts:
   - path: /.well-known/mcp.json
     status: 404
     document: false
-
 - host: app.spotwise.ai
   paths:
   - path: /.well-known/oauth-authorization-server
@@ -91,10 +93,15 @@ hosts:
   - path: /.well-known/agent.json
     status: 404
     document: false
-
+  documents:
+  - path: /api/auth/.well-known/oauth-authorization-server
+    status: 200
+    file: spotwise-inc-app-oauth-authorization-server.json
+    bytes: 2298
+  path_echo_control: passed
 - host: spotwise-attribution-api-bmexgmdgfqhgepc5.germanywestcentral-01.azurewebsites.net
-  note: the attribution/measurement relay host referenced from spotwise.ai's own page
-    scripts; serves a JSON service index at / but no /.well-known/* documents
+  note: the attribution/measurement relay host referenced from spotwise.ai's own page scripts; serves
+    a JSON service index at / but no /.well-known/* documents
   paths:
   - path: /.well-known/security.txt
     status: 404
@@ -105,7 +112,13 @@ hosts:
   - path: /.well-known/agent-card.json
     status: 404
     document: false
-
+- host: https://api.spotwise.ai
+  documents:
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: spotwise-inc-api-oauth-protected-resource.json
+    bytes: 145
+  path_echo_control: passed
 summary:
   hosts_probed: 3
   documents_found: 6
@@ -114,3 +127,15 @@ summary:
   api_catalog: false
   agent_card: false
   oauth_metadata: true
+x-mcp-probe:
+  probed: '2026-09-19'
+  issue: roadmap#321, roadmap#337
+  documents:
+  - host: https://api.spotwise.ai
+    path: /.well-known/oauth-protected-resource
+    file: spotwise-inc-api-oauth-protected-resource.json
+  - host: https://app.spotwise.ai
+    path: /api/auth/.well-known/oauth-authorization-server
+    file: spotwise-inc-app-oauth-authorization-server.json
+  validated_on: resource (RFC 9728) / issuer (RFC 8414, OIDC)
+  negative_control: one per host; a 2xx JSON object at an impossible path discards the host
