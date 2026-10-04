@@ -23,7 +23,7 @@ accessModel:
   generated: '2026-08-12'
   method: searched
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/spotwise-inc.png
-name: Spotwise, Inc.
+name: Spotwise
 description: >-
   Spotwise is an agentic operating system for broadcast media that detects advertising
   across radio, TV, podcasts, and streaming audio in real time, converts that ad-play
@@ -233,3 +233,4 @@ x-enrichment:
   status: enriched
   artifacts_added: 19
   pass: local-v1
+x-legal-name: Spotwise, Inc.
