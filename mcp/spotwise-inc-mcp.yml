@@ -116,3 +116,15 @@ deployment:
   probe: gated
   checked: '2026-08-12'
   source: catalog MCP census
+rfc9728:
+  endpoint: https://app.spotwise.ai/api/mcp
+  metadata_url: https://api.spotwise.ai/.well-known/oauth-protected-resource/api/mcp
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://api.spotwise.ai/api/mcp
+    authorization_servers:
+    - https://app.spotwise.ai/api/auth
+    resource_name: Spotwise Remote MCP
